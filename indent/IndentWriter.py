@@ -15,7 +15,7 @@
 import sys
 from abc import ABCMeta, abstractmethod
 
-from StringBuilder import StringBuilder
+from indent.StringBuilder import StringBuilder
 
 #--------------------------------------------------------------------
 class IndentBase (object):

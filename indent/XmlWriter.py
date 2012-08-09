@@ -13,8 +13,8 @@ import types
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 
-from StringBuilder import StringBuilder
-from IndentWriter import *
+from indent.StringBuilder import StringBuilder
+from indent.IndentWriter import *
 
 from xml.sax.saxutils import escape as xml_escape
 
