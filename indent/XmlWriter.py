@@ -8,8 +8,6 @@
 #
 
 import sys
-import types
-
 from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 
@@ -78,11 +76,11 @@ class XmlElement (XmlElementBase):
          self.attrs.update (kwargs)
 
       for child in args:
-         if isinstance (child, types.StringTypes):
+         if isinstance (child, str):
             self.children.append (XmlText (child))
-         elif isinstance (child, types.ListType) or isinstance (child, types.TupleType):
+         elif isinstance (child, list) or isinstance (child, tuple):
             self.apply (*child)
-         elif (isinstance (child, types.DictType)):
+         elif (isinstance (child, dict)):
             self.attrs.update (child)
          else:
             self.children.append (child)

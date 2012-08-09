@@ -9,7 +9,6 @@
 #
 
 import sys
-import types
 
 #--------------------------------------------------------------------
 class StringBuilder (object):
@@ -20,10 +19,10 @@ class StringBuilder (object):
    def __init__ (self, obj = None):
       self.strings = []
 
-      if isinstance (obj, types.StringTypes):
+      if isinstance (obj, str):
          self.append (obj)
 
-      elif isinstance (obj, (types.ListType, types.TupleType)):
+      elif isinstance (obj, list) or isinstance (obj, tuple):
          self.extend (obj)
    
 
