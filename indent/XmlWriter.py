@@ -121,7 +121,7 @@ class XmlElement (XmlElementBase):
 
    def _getAttrsStr (self):
       return ' '.join (['%s="%s"' % tuple (map (xml_escape, x)) for x in \
-            self.attrs.iteritems ()])
+            self.attrs.items ()])
    
    def __call__ (self, *args, **kwargs):
       self.apply (args, kwargs)
