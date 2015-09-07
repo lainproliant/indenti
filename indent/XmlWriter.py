@@ -58,6 +58,7 @@ class XmlElement (XmlElementBase):
    def __init__ (self, name, attrs = None):
       XmlElementBase.__init__ (self, ELEMENT_NODE)
       self.name = name
+      self.doctype = None
 
       self.children = []
 
@@ -97,7 +98,10 @@ class XmlElement (XmlElementBase):
       """
 
       sb = IndentStringBuilder ()
-      
+        
+      if self.doctype is not None:
+          sb("<!doctype %s>" % self.doctype)
+
       if not self.children:
          if not self.attrs:
             sb ("<%s/>" % (xml_escape (self.name)))
