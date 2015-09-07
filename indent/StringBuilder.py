@@ -11,22 +11,22 @@
 import sys
 
 #--------------------------------------------------------------------
-class StringBuilder (object):
+class StringBuilder(object):
    """
       A simple string builder.
    """
 
-   def __init__ (self, obj = None):
+   def __init__(self, obj = None):
       self.strings = []
 
-      if isinstance (obj, str):
-         self.append (obj)
+      if isinstance(obj, str):
+         self.append(obj)
 
-      elif isinstance (obj, list) or isinstance (obj, tuple):
-         self.extend (obj)
+      elif isinstance(obj, list) or isinstance(obj, tuple):
+         self.extend(obj)
    
 
-   def getLines (self):
+   def getLines(self):
       """
          Gets all of the individual lines of output.
       """
@@ -34,12 +34,12 @@ class StringBuilder (object):
       lines = []
 
       for outputStr in self.strings:
-         lines.extend (filter (None, outputStr.split ('\n')))
+         lines.extend(filter(None, outputStr.split('\n')))
       
       return lines
 
 
-   def getString (self):
+   def getString(self):
       """
          Concatenates the list of output strings.
 
@@ -47,26 +47,26 @@ class StringBuilder (object):
          on each write.
       """
 
-      return ''.join (self.strings)
+      return ''.join(self.strings)
 
    
-   def append (self, string):
+   def append(self, string):
       """
          Adds the given string.
       """
 
-      self.strings.append (string)
+      self.strings.append(string)
 
    
-   def extend (self, strings):
+   def extend(self, strings):
       """
          Adds the given list/tuple of strings.
       """
 
-      map (self.append, strings)
+      map(self.append, strings)
 
 
-   def __str__ (self):
-      return self.getString ()
+   def __str__(self):
+      return self.getString()
 
 

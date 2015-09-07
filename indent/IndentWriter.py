@@ -18,14 +18,14 @@ from abc import ABCMeta, abstractmethod
 from indent.StringBuilder import StringBuilder
 
 #--------------------------------------------------------------------
-class IndentBase (object):
+class IndentBase(object):
    """
       An abstract base class for string indenting.
    """
 
    __metaclass__ = ABCMeta
    
-   def __init__ (self, outfile = sys.stdout):
+   def __init__(self, outfile = sys.stdout):
       """
          Initializes an IndentWriter.
       """
@@ -37,7 +37,7 @@ class IndentBase (object):
 
    
    @abstractmethod
-   def _write_raw (self, output):
+   def _write_raw(self, output):
       """
          The raw write method.
 
@@ -50,16 +50,16 @@ class IndentBase (object):
       pass
 
 
-   def __call__ (self, output = None):
+   def __call__(self, output = None):
       """
          Called when the object is treated as a functor.
-         This syntax is synonymous to calling println ().
+         This syntax is synonymous to calling println().
 
          EXAMPLE:
 
-         iw = IndentWriter ()
-         iw ("Hello,")
-         iw.println ("World!")
+         iw = IndentWriter()
+         iw("Hello,")
+         iw.println("World!")
 
          OUTPUT:
          Hello,
@@ -67,12 +67,12 @@ class IndentBase (object):
       """
       
       if output is None:
-         self.newline ()
+         self.newline()
       else:
-         self.println (output)
+         self.println(output)
 
 
-   def write (self, output):
+   def write(self, output):
       """
          Print the given line to output,
          indenting if necessary.
@@ -80,12 +80,12 @@ class IndentBase (object):
 
       if self.isnewline:
          self.isnewline = False
-         self._write_raw (self.indentStr * self.il)
+         self._write_raw(self.indentStr * self.il)
 
-      self._write_raw (output)
+      self._write_raw(output)
 
 
-   def indent (self, level = 1):
+   def indent(self, level = 1):
       """
          Indent the given number of levels.
 
@@ -97,7 +97,7 @@ class IndentBase (object):
       self.il += level
 
    
-   def unindent (self, level = 1):
+   def unindent(self, level = 1):
       """
          Unindent the given number of levels.
 
@@ -112,7 +112,7 @@ class IndentBase (object):
          self.il = 0
 
 
-   def setIndentString (self, indentStr):
+   def setIndentString(self, indentStr):
       """
          Sets the string used to indent.
 
@@ -123,7 +123,7 @@ class IndentBase (object):
       self.indentStr = indentStr
 
 
-   def setEnabled (self, enabled):
+   def setEnabled(self, enabled):
       """
          Sets whether indenting is enabled.
       """
@@ -131,7 +131,7 @@ class IndentBase (object):
       self.enabled = enabled
 
 
-   def println (self, output):
+   def println(self, output):
       """
          Print the given line to output,
          indenting if necessary.
@@ -139,48 +139,48 @@ class IndentBase (object):
          A newline is appended to the output.
       """
       
-      self.write (output)
-      self.newline ()
+      self.write(output)
+      self.newline()
 
 
-   def printLines (self, output):
+   def printLines(self, output):
       """
          Prints the given string with multiple
          lines to output, indenting each line.
       """
       
-      for line in output.splitlines ():
-         self.println (line)
+      for line in output.splitlines():
+         self.println(line)
 
 
-   def writeln (self, output):
+   def writeln(self, output):
       """
          A synonym for println.
       """
 
-      self.println (output)
+      self.println(output)
 
 
-   def newline (self):
+   def newline(self):
       """
          Append a newline to the output.
       """
 
       self.isnewline = True
-      self._write_raw ('\n')
+      self._write_raw('\n')
 
 
-   def __enter__ (self):
+   def __enter__(self):
       """
          This method is called when the object enters
          the context of a with block.
 
          EXAMPLE:
 
-         iw = IndentWriter ()
-         iw.println ("Hello,")
+         iw = IndentWriter()
+         iw.println("Hello,")
          with iw:
-            iw.println ("World!")
+            iw.println("World!")
 
          OUTPUT:
 
@@ -188,21 +188,21 @@ class IndentBase (object):
             World!
       """
       
-      self.indent ()
+      self.indent()
 
    
-   def __exit__ (self, excType, excVal, excTraceback):
+   def __exit__(self, excType, excVal, excTraceback):
       """
          This method is called when the object leaves
          the context of a with block.
 
          EXAMPLE:
 
-         iw = IndentWriter ()
+         iw = IndentWriter()
          with iw:
-            iw.println ("Hello,")
+            iw.println("Hello,")
 
-         iw.println ("World!")
+         iw.println("World!")
 
          OUTPUT:
 
@@ -210,53 +210,53 @@ class IndentBase (object):
          World!
       """
 
-      self.unindent ()
+      self.unindent()
    
 #--------------------------------------------------------------------
-class IndentWriter (IndentBase):
+class IndentWriter(IndentBase):
    """
       An indented text printer.
    """
 
-   def __init__ (self, outfile = sys.stdout):
+   def __init__(self, outfile = sys.stdout):
       """
          Initializes an IndentWriter.
       """
       
-      IndentBase.__init__ (self)
+      IndentBase.__init__(self)
 
       self.outfile = outfile
 
    
-   def _write_raw (self, output):
+   def _write_raw(self, output):
       """
          The raw write method.
 
          Sends the output on to the output file.
       """
       
-      self.outfile.write (output)
+      self.outfile.write(output)
 
 #--------------------------------------------------------------------
-class IndentStringBuilder (IndentBase, StringBuilder):
+class IndentStringBuilder(IndentBase, StringBuilder):
    """
       An indented string builder.
 
       Appends all of the given input into a string,
-      which can be fetched via str () or via
-      IndentStringBuilder.getString ().
+      which can be fetched via str() or via
+      IndentStringBuilder.getString().
    """
 
-   def __init__ (self):
+   def __init__(self):
       """
          Initializes an IndentStringBuilder.
       """
       
-      IndentBase.__init__ (self)
-      StringBuilder.__init__ (self)
+      IndentBase.__init__(self)
+      StringBuilder.__init__(self)
    
 
-   def _write_raw (self, output):
+   def _write_raw(self, output):
       """
          The raw write method.
 
@@ -264,7 +264,7 @@ class IndentStringBuilder (IndentBase, StringBuilder):
          to be concatenated when necessary.
       """
 
-      self.append (output)
+      self.append(output)
 
    
 
