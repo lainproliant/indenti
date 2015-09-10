@@ -81,7 +81,7 @@ class XmlElement(XmlElementBase):
          if isinstance(child, str):
             self.children.append(XmlText(child))
          elif isinstance(child, list) or isinstance(child, tuple):
-            self.apply(map(zip(child, repeat(None))))
+            self.apply(dict(zip(child, repeat(None))))
          elif(isinstance(child, dict)):
             self.attrs.update(child)
          else:
