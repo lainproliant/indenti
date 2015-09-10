@@ -14,6 +14,7 @@ from collections import OrderedDict
 from indent.StringBuilder import StringBuilder
 from indent.IndentWriter import *
 
+from itertools import repeat
 from xml.sax.saxutils import escape as xml_escape
 
 ELEMENT_NODE      = "Node"
@@ -80,7 +81,7 @@ class XmlElement(XmlElementBase):
          if isinstance(child, str):
             self.children.append(XmlText(child))
          elif isinstance(child, list) or isinstance(child, tuple):
-            self.apply(*child)
+            self.apply(map(zip(child, repeat(None))))
          elif(isinstance(child, dict)):
             self.attrs.update(child)
          else:
@@ -124,11 +125,18 @@ class XmlElement(XmlElementBase):
 
 
    def _getAttrsStr(self):
-      return ' '.join(['%s="%s"' % tuple(map(xml_escape, x)) for x in \
-            self.attrs.items()])
-   
+      attrDecls = []
+
+      for attr, value in self.attrs.items():
+         if value is not None:
+            attrDecls.append('%s=\"%s\"' % map(xml_escape, (attr, value)))
+         else:
+            attrDecls.append('%s' % attr)
+
+      return ' '.join(attrDecls)
+      
    def __call__(self, *args, **kwargs):
-      self.apply(args, kwargs)
+      self.apply(*args, **kwargs)
 
 
 #--------------------------------------------------------------------
