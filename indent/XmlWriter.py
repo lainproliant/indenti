@@ -81,8 +81,10 @@ class XmlElement(XmlElementBase):
          if isinstance(child, str):
             self.children.append(XmlText(child))
          elif isinstance(child, list) or isinstance(child, tuple):
+            print('LRS-DEBUG: list is %s' % repr(child))
             self.apply(dict(zip(child, repeat(None))))
          elif(isinstance(child, dict)):
+            print('LRS-DEBUG: dict is %s' % repr(child))
             self.attrs.update(child)
          else:
             self.children.append(child)
@@ -105,15 +107,15 @@ class XmlElement(XmlElementBase):
 
       if not self.children:
          if not self.attrs:
-            sb("<%s/>" %(xml_escape(self.name)))
+            sb("<%s/>" % (xml_escape(self.name)))
          else:
-            sb("<%s %s/>" %(xml_escape(self.name), self._getAttrsStr()))
+            sb("<%s %s/>" % (xml_escape(self.name), self._getAttrsStr()))
 
       else:
          if not self.attrs:
-            sb("<%s>" %(xml_escape(self.name)))
+            sb("<%s>" % (xml_escape(self.name)))
          else:
-            sb("<%s %s>" %(xml_escape(self.name), self._getAttrsStr()))
+            sb("<%s %s>" % (xml_escape(self.name), self._getAttrsStr()))
 
          with sb:
             for child in self.children:
@@ -129,9 +131,9 @@ class XmlElement(XmlElementBase):
 
       for attr, value in self.attrs.items():
          if value is not None:
-            attrDecls.append('%s=\"%s\"' % map(xml_escape, (attr, value)))
+            attrDecls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(value)))
          else:
-            attrDecls.append('%s' % attr)
+            attrDecls.append('%s' % xml_escape(attr))
 
       return ' '.join(attrDecls)
       
