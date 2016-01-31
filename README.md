@@ -10,6 +10,12 @@ Indent Tools contains the following modules:
    * XmlWriter
    * StringBuilder
 
+Installation
+------------
+Installation is simple.  With python3-pip, do the following:
+
+   $ sudo pip install -e .
+
 # About IndentWriter
 IndentWriter is a module that simplifies the task of indenting output.
 It keeps track of indent levels and provides a pythonic way of incrementing
@@ -17,11 +23,10 @@ and decrementing the indent level using the optional 'with' syntax.
 By default, IndentWriter writes to sys.stdout, but can be told to write to
 any other File object at construction.
 
-
 Example Usage, IndentWriter(using 'with'):
 
 ```
-from indent.IndentWriter import *
+from indent_tools import IndentWriter
 
 iw = IndentWriter()
 
@@ -32,7 +37,7 @@ with iw:
 
 Example Usage, IndentWriter(without 'with'):
 ```
-from indent.IndentWriter import *
+from indent_tools import IndentWriter
 
 iw = IndentWriter()
 iw('def hello():')
@@ -42,7 +47,7 @@ iw('print "Hello!"')
 
 Example Usage, IndentStringBuilder:
 ```
-from indent.IndentWriter import *
+from indent_tools import IndentStringBuilder
 
 sb = IndentStringBuilder()
 
@@ -53,15 +58,14 @@ with sb:
 print str(sb)
 ```
 
-# About XmlWriter 
-XmlWriter is a python module that facilitates the generation of
-XML markup.  Via XmlFactory, any node name can be specified as
+# About XmlFactory
+Via XmlFactory, any node name can be specified as
 an attribute, which returns a functor to create a new node.
 
 Example Usage, XmlWriter(A CherryPy HTML Servlet):
 ```
 import cherrypy
-from indent.XmlWriter import *
+from indent_tools import XmlFactory
 
 class HelloWorld:
     def index(self):
@@ -86,7 +90,7 @@ instead of using keyword arguments, if this is your preference.
 Example Usage, XmlWriter(Using attributes/nodes that conflict with python keywords):
 ```
     import cherrypy
-    from indent.XmlWriter import *
+    from indent_tools import XmlFactory
 
     class HelloWorld:
        def index(self):
@@ -103,38 +107,3 @@ Example Usage, XmlWriter(Using attributes/nodes that conflict with python keywor
        index.exposed = True
 ```
 
-# About StringBuilder
-StringBuilder is a simple class that builds a string from a list of strings.
-In function, it is similar to java.lang.StringBuilder from Java, but it
-includes a bit more functionality that is useful for markup generation.
-
-Example Usage, StringBuilder(from XmlWriter.XmlElement.getString()):
-```
-    def getString(self):
-       """
-          Constructs a string representation of the xml
-          element and it's child elements.
-       """
-
-       sb = IndentStringBuilder()
-      
-       if not self.children:
-          if not self.attrs:
-             sb("<%s/>" %(xml_escape(self.name)))
-          else:
-             sb("<%s %s/>" %(xml_escape(self.name), self._getAttrsStr()))
- 
-       else:
-          if not self.attrs:
-             sb("<%s>" %(xml_escape(self.name)))
-          else:
-             sb("<%s %s>" %(xml_escape(self.name), self._getAttrsStr()))
- 
-          with sb:
-             for child in self.children:
-                sb.printLines(str(child))
- 
-          sb("</%s>" % xml_escape(self.name))
- 
-       return str(sb)
-```
