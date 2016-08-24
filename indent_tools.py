@@ -26,8 +26,8 @@ ELEMENT_CDATA       = "CDATA"
 ELEMENT_COMMENT     = "Comment"
 
 HTML_VOID_TAGS = set(['area', 'base', 'br', 'col', 'hr', 'img', 'input',
-                             'link', 'meta', 'param', 'command', 'keygen',
-                             'source'])
+                      'link', 'meta', 'param', 'command', 'keygen',
+                      'source'])
 
 #--------------------------------------------------------------------
 class StringBuilder:
@@ -474,7 +474,7 @@ class XmlFactory:
             xf.__getattr__("1stName")("Lee")
         """
 
-        return XmlFunctor(element_name)
+        return XmlFunctor(element_name, html = self.__html)
 
 #--------------------------------------------------------------------
 class HtmlFactory(XmlFactory):
