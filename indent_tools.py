@@ -380,11 +380,16 @@ class XmlElement(XmlElementBase):
         else:
             self.attrs = OrderedDict(attrs)
 
+    def doctype(self, doctype):
+        self.doctype = doctype
+        return self
+
     def append(self, child):
         if self.html and self.name in HTML_VOID_TAGS:
             raise ValueError('HTML void tags (%s) cannot have child elements.' % (
                 ', '.join(HTML_VOID_TAGS)))
         self.children.append(child)
+        return self
 
     def apply(self, *args, **kwargs):
         """
@@ -406,10 +411,18 @@ class XmlElement(XmlElementBase):
 
         return self
 
-    def __str__(self):
-        return self.get_string()
+    def _get_attrs_str(self):
+        attr_decls = []
 
-    def get_string(self):
+        for attr, value in self.attrs.items():
+            if value is not None:
+                attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(str(value))))
+            else:
+                attr_decls.append('%s' % xml_escape(attr))
+
+        return ' '.join(attr_decls)
+
+    def __str__(self):
         """
             Constructs a string representation of the xml
             element and it's child elements.
@@ -445,17 +458,6 @@ class XmlElement(XmlElementBase):
             sb("</%s>" % xml_escape(self.name))
 
         return str(sb)
-
-    def _get_attrs_str(self):
-        attr_decls = []
-
-        for attr, value in self.attrs.items():
-            if value is not None:
-                attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(str(value))))
-            else:
-                attr_decls.append('%s' % xml_escape(attr))
-
-        return ' '.join(attr_decls)
 
     def __call__(self, *args, **kwargs):
         return self.apply(*args, **kwargs)
