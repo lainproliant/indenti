@@ -335,16 +335,28 @@ class XmlElementBase:
         return self.node_type
 
 #--------------------------------------------------------------------
+class TextObject:
+    """
+        An interface for objects which are transformed into text.
+        This allows certain types of behavior such as
+        interpolations and translation subsitutions to happen
+        while the Xml/Html document is being rendered.
+    """
+    def __str__(self):
+        raise NotImplementedError()
+
+#--------------------------------------------------------------------
 class XmlText(XmlElementBase):
     """
         A node containing text.
     """
 
     def __init__(self, text):
+        XmlElementBase.__init__(self, ELEMENT_TEXT)
         self.text = text
 
     def __str__(self):
-        return xml_escape(self.text)
+        return xml_escape(str(self.text))
 
 #--------------------------------------------------------------------
 class XmlElement(XmlElementBase):
@@ -383,7 +395,7 @@ class XmlElement(XmlElementBase):
             self.attrs.update(kwargs)
 
         for child in args:
-            if isinstance(child, str):
+            if isinstance(child, str) or isinstance(child, XmlObject):
                 self.append(XmlText(child))
             elif isinstance(child, list) or isinstance(child, tuple):
                 self.apply(*child)
@@ -391,6 +403,8 @@ class XmlElement(XmlElementBase):
                 self.attrs.update(child)
             else:
                 self.append(child)
+
+        return self
 
     def __str__(self):
         return self.get_string()
@@ -437,14 +451,14 @@ class XmlElement(XmlElementBase):
 
         for attr, value in self.attrs.items():
             if value is not None:
-                attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(value)))
+                attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(str(value))))
             else:
                 attr_decls.append('%s' % xml_escape(attr))
 
         return ' '.join(attr_decls)
 
     def __call__(self, *args, **kwargs):
-        self.apply(*args, **kwargs)
+        return self.apply(*args, **kwargs)
 
 #--------------------------------------------------------------------
 class XmlFactory:
