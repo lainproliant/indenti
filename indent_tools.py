@@ -514,3 +514,10 @@ class XmlFunctor:
 
         return node
 
+#--------------------------------------------------------------------
+# Define a global XmlFactory for modules to use.
+xml = HtmlFactory()
+
+#--------------------------------------------------------------------
+# Define a global HtmlFactory for modules to use.
+html = HtmlFactory()
