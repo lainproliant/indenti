@@ -37,7 +37,7 @@ class StringBuilder:
     """
 
     def __init__(self, obj = None):
-        self.strings = []
+        self._strings = []
 
         if isinstance(obj, str):
             self.append(obj)
@@ -52,7 +52,7 @@ class StringBuilder:
 
         lines = []
 
-        for output_str in self.strings:
+        for output_str in self._strings:
             lines.extend(filter(None, output_str.split('\n')))
 
         return lines
@@ -65,14 +65,14 @@ class StringBuilder:
             on each write.
         """
 
-        return ''.join(self.strings)
+        return ''.join(self._strings)
 
     def append(self, string):
         """
             Adds the given string.
         """
 
-        self.strings.append(string)
+        self._strings.append(string)
 
     def extend(self, strings):
         """
@@ -97,10 +97,10 @@ class IndentBase:
             Initializes an IndentWriter.
         """
 
-        self.il = 0
-        self.indent_str = '    '
-        self.enabled = True
-        self.isnewline = False
+        self._il = 0
+        self._indent_str = '    '
+        self._enabled = True
+        self._isnewline = False
 
     @abstractmethod
     def _write_raw(self, output):
@@ -142,9 +142,9 @@ class IndentBase:
             indenting if necessary.
         """
 
-        if self.isnewline:
-            self.isnewline = False
-            self._write_raw(self.indent_str * self.il)
+        if self._isnewline:
+            self._isnewline = False
+            self._write_raw(self._indent_str * self._il)
 
         self._write_raw(output)
 
@@ -157,7 +157,7 @@ class IndentBase:
             below zero is equivalent zero.
         """
 
-        self.il += level
+        self._il += level
 
     def unindent(self, level = 1):
         """
@@ -168,10 +168,10 @@ class IndentBase:
             the indent level.
         """
 
-        self.il -= level
+        self._il -= level
 
-        if self.il < 0:
-            self.il = 0
+        if self._il < 0:
+            self._il = 0
 
     def set_indent_string(self, indent_str):
         """
@@ -181,14 +181,14 @@ class IndentBase:
             for each indent level.
         """
 
-        self.indent_str = indent_str
+        self._indent_str = indent_str
 
     def set_enabled(self, enabled):
         """
             Sets whether indenting is enabled.
         """
 
-        self.enabled = enabled
+        self._enabled = enabled
 
     def println(self, output):
         """
@@ -222,7 +222,7 @@ class IndentBase:
             Append a newline to the output.
         """
 
-        self.isnewline = True
+        self._isnewline = True
         self._write_raw('\n')
 
     def __enter__(self):
@@ -284,7 +284,7 @@ class IndentWriter(IndentBase):
 
         IndentBase.__init__(self)
 
-        self.outfile = outfile
+        self._outfile = outfile
 
     def _write_raw(self, output):
         """
@@ -293,7 +293,7 @@ class IndentWriter(IndentBase):
             Sends the output on to the output file.
         """
 
-        self.outfile.write(output)
+        self._outfile.write(output)
 
 #--------------------------------------------------------------------
 class IndentStringBuilder(IndentBase, StringBuilder):
@@ -328,11 +328,11 @@ class XmlElementBase:
     __metaclass__ = ABCMeta
 
     def __init__(self, node_type):
-        self.node_type = node_type
+        self._node_type = node_type
 
     @property
     def nodetype(self):
-        return self.node_type
+        return self._node_type
 
 #--------------------------------------------------------------------
 class TextObject:
@@ -353,10 +353,10 @@ class XmlText(XmlElementBase):
 
     def __init__(self, text):
         XmlElementBase.__init__(self, ELEMENT_TEXT)
-        self.text = text
+        self._text = text
 
     def __str__(self):
-        return xml_escape(str(self.text))
+        return xml_escape(str(self._text))
 
 #--------------------------------------------------------------------
 class XmlElement(XmlElementBase):
@@ -369,26 +369,26 @@ class XmlElement(XmlElementBase):
 
     def __init__(self, name, attrs = None, html = False):
         XmlElementBase.__init__(self, ELEMENT_NODE)
-        self.name = name
-        self.doctype = None
-        self.html = html
+        self._name = name
+        self._doctype = None
+        self._html = html
 
-        self.children = []
+        self._children = []
 
         if attrs is None:
-            self.attrs = OrderedDict()
+            self._attrs = OrderedDict()
         else:
-            self.attrs = OrderedDict(attrs)
+            self._attrs = OrderedDict(attrs)
 
     def doctype(self, doctype):
-        self.doctype = doctype
+        self._doctype = doctype
         return self
 
     def append(self, child):
-        if self.html and self.name in HTML_VOID_TAGS:
+        if self._html and self._name in HTML_VOID_TAGS:
             raise ValueError('HTML void tags (%s) cannot have child elements.' % (
                 ', '.join(HTML_VOID_TAGS)))
-        self.children.append(child)
+        self._children.append(child)
         return self
 
     def apply(self, *args, **kwargs):
@@ -397,7 +397,7 @@ class XmlElement(XmlElementBase):
         """
 
         if kwargs is not None:
-            self.attrs.update(kwargs)
+            self._attrs.update(kwargs)
 
         for child in args:
             if isinstance(child, str) or isinstance(child, TextObject):
@@ -405,7 +405,7 @@ class XmlElement(XmlElementBase):
             elif isinstance(child, list) or isinstance(child, tuple):
                 self.apply(*child)
             elif(isinstance(child, dict)):
-                self.attrs.update(child)
+                self._attrs.update(child)
             else:
                 self.append(child)
 
@@ -414,7 +414,7 @@ class XmlElement(XmlElementBase):
     def _get_attrs_str(self):
         attr_decls = []
 
-        for attr, value in self.attrs.items():
+        for attr, value in self._attrs.items():
             if value is not None:
                 attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(str(value))))
             else:
@@ -430,32 +430,32 @@ class XmlElement(XmlElementBase):
 
         sb = IndentStringBuilder()
 
-        if self.doctype is not None:
-             sb("<!doctype %s>" % self.doctype)
+        if self._doctype is not None:
+             sb("<!doctype %s>" % self._doctype)
 
-        if not self.children:
-            if self.html and self.name not in HTML_VOID_TAGS:
-                if not self.attrs:
-                    sb("<%s></%s>" % (xml_escape(self.name), xml_escape(self.name)))
+        if not self._children:
+            if self._html and self._name not in HTML_VOID_TAGS:
+                if not self._attrs:
+                    sb("<%s></%s>" % (xml_escape(self._name), xml_escape(self._name)))
                 else:
-                    sb("<%s %s></%s>" % (xml_escape(self.name), self._get_attrs_str(),
-                                         xml_escape(self.name)))
-            elif not self.attrs:
-                sb("<%s/>" % (xml_escape(self.name)))
+                    sb("<%s %s></%s>" % (xml_escape(self._name), self._get_attrs_str(),
+                                         xml_escape(self._name)))
+            elif not self._attrs:
+                sb("<%s/>" % (xml_escape(self._name)))
             else:
-                sb("<%s %s/>" % (xml_escape(self.name), self._get_attrs_str()))
+                sb("<%s %s/>" % (xml_escape(self._name), self._get_attrs_str()))
 
         else:
-            if not self.attrs:
-                sb("<%s>" % (xml_escape(self.name)))
+            if not self._attrs:
+                sb("<%s>" % (xml_escape(self._name)))
             else:
-                sb("<%s %s>" % (xml_escape(self.name), self._get_attrs_str()))
+                sb("<%s %s>" % (xml_escape(self._name), self._get_attrs_str()))
 
             with sb:
-                for child in self.children:
+                for child in self._children:
                     sb.print_lines(str(child))
 
-            sb("</%s>" % xml_escape(self.name))
+            sb("</%s>" % xml_escape(self._name))
 
         return str(sb)
 
@@ -515,8 +515,8 @@ class XmlFunctor:
     """
 
     def __init__(self, element_name, html = False):
-        self.element_name = element_name
-        self.html = html
+        self._element_name = element_name
+        self._html = html
 
     def __call__(self, *args, **kwargs):
         """
@@ -525,7 +525,7 @@ class XmlFunctor:
             in the attribute name from XmlFactory.
         """
 
-        node = XmlElement(self.element_name, html = self.html)
+        node = XmlElement(self._element_name, html = self._html)
         node.apply(*args, **kwargs)
 
         return node
