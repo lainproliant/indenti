@@ -395,7 +395,7 @@ class XmlElement(XmlElementBase):
             self.attrs.update(kwargs)
 
         for child in args:
-            if isinstance(child, str) or isinstance(child, XmlObject):
+            if isinstance(child, str) or isinstance(child, TextObject):
                 self.append(XmlText(child))
             elif isinstance(child, list) or isinstance(child, tuple):
                 self.apply(*child)
