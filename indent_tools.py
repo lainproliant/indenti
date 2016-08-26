@@ -405,7 +405,11 @@ class XmlElement(XmlElementBase):
             elif isinstance(child, list) or isinstance(child, tuple):
                 self.apply(*child)
             elif(isinstance(child, dict)):
-                self._attrs.update(child)
+                for key, value in child.items():
+                    if key == 'class' and self._html and 'class' in self._attrs:
+                        self._attrs['class'] += ' ' + value
+                    else:
+                        self._attrs[key] = value
             else:
                 self.append(child)
 
