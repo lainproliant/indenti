@@ -120,3 +120,13 @@ python keywords):
               return str(xml)
 
            index.exposed = True
+
+Change Log
+----------
+
+Version 1.1: October 18th, 2016
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Added support for unindented blocks in HTML mode (for textarea)
+- Fixed escaping of XML attributes
+
+

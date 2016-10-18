@@ -19,15 +19,20 @@ from abc import ABCMeta, abstractmethod
 from collections import OrderedDict
 from itertools import repeat
 from xml.sax.saxutils import escape as xml_escape
+from xml.sax.saxutils import quoteattr as attr_escape
 
 ELEMENT_NODE        = "Node"
 ELEMENT_TEXT        = "Text"
 ELEMENT_CDATA       = "CDATA"
 ELEMENT_COMMENT     = "Comment"
 
+# These HTML tags must omit their end tags.
 HTML_VOID_TAGS = set(['area', 'base', 'br', 'col', 'hr', 'img', 'input',
                       'link', 'meta', 'param', 'command', 'keygen',
                       'source'])
+
+# These tags should not be indented.
+HTML_NOINDENT_TAGS = set(['textarea'])
 
 #--------------------------------------------------------------------
 class StringBuilder:
@@ -420,7 +425,7 @@ class XmlElement(XmlElementBase):
 
         for attr, value in self._attrs.items():
             if value is not None:
-                attr_decls.append('%s=\"%s\"' % (xml_escape(attr), xml_escape(str(value))))
+                attr_decls.append('%s=%s' % (xml_escape(attr), attr_escape(str(value))))
             else:
                 attr_decls.append('%s' % xml_escape(attr))
 
@@ -450,16 +455,30 @@ class XmlElement(XmlElementBase):
                 sb("<%s %s/>" % (xml_escape(self._name), self._get_attrs_str()))
 
         else:
-            if not self._attrs:
-                sb("<%s>" % (xml_escape(self._name)))
+            if self._html and self._name in HTML_NOINDENT_TAGS:
+                if not self._attrs:
+                    sb("<%s>%s</%s>" % (
+                        xml_escape(self._name),
+                        ''.join(str(child) for child in self._children),
+                        xml_escape(self._name)))
+                else:
+                    sb("<%s %s>%s</%s>" % (
+                        xml_escape(self._name),
+                        self._get_attrs_str(),
+                        ''.join(str(child) for child in self._children),
+                        xml_escape(self._name)))
+
             else:
-                sb("<%s %s>" % (xml_escape(self._name), self._get_attrs_str()))
+                if not self._attrs:
+                    sb("<%s>" % (xml_escape(self._name)))
+                else:
+                    sb("<%s %s>" % (xml_escape(self._name), self._get_attrs_str()))
 
-            with sb:
-                for child in self._children:
-                    sb.print_lines(str(child))
+                with sb:
+                    for child in self._children:
+                        sb.print_lines(str(child))
 
-            sb("</%s>" % xml_escape(self._name))
+                sb("</%s>" % xml_escape(self._name))
 
         return str(sb)
 
