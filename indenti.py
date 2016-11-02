@@ -457,16 +457,16 @@ class XmlElement(XmlElementBase):
         else:
             if self._html and self._name in HTML_NOINDENT_TAGS:
                 if not self._attrs:
-                    sb("<%s>%s</%s>" % (
+                    return "<%s>%s</%s>" % (
                         xml_escape(self._name),
                         ''.join(str(child) for child in self._children),
-                        xml_escape(self._name)))
+                        xml_escape(self._name))
                 else:
-                    sb("<%s %s>%s</%s>" % (
+                    return "<%s %s>%s</%s>" % (
                         xml_escape(self._name),
                         self._get_attrs_str(),
                         ''.join(str(child) for child in self._children),
-                        xml_escape(self._name)))
+                        xml_escape(self._name))
 
             else:
                 if not self._attrs:
@@ -476,7 +476,10 @@ class XmlElement(XmlElementBase):
 
                 with sb:
                     for child in self._children:
-                        sb.print_lines(str(child))
+                        if child._html and child._name in HTML_NOINDENT_TAGS:
+                            sb.append(str(child))
+                        else:
+                            sb.print_lines(str(child))
 
                 sb("</%s>" % xml_escape(self._name))
 
