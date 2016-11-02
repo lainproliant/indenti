@@ -129,4 +129,8 @@ Version 1.1: October 18th, 2016
 - Added support for unindented blocks in HTML mode (for textarea)
 - Fixed escaping of XML attributes
 
+Version 1.2: November 1st, 2016
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Make parents respect the NOINDENT status of their children in HTML mode.
+
 
