@@ -476,7 +476,7 @@ class XmlElement(XmlElementBase):
 
                 with sb:
                     for child in self._children:
-                        if child._html and child._name in HTML_NOINDENT_TAGS:
+                        if isinstance(child, XmlElement) and child._html and child._name in HTML_NOINDENT_TAGS:
                             sb.append(str(child))
                         else:
                             sb.print_lines(str(child))
