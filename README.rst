@@ -124,13 +124,17 @@ python keywords):
 Change Log
 ----------
 
-Version 1.1: October 18th, 2016
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-- Added support for unindented blocks in HTML mode (for textarea)
-- Fixed escaping of XML attributes
+Version 1.4: April 22nd, 2017
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Make XmlFactory callable, allowing tags with dashes, e.g. xf('my-dash-tag')()
 
 Version 1.2: November 1st, 2016
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 - Make parents respect the NOINDENT status of their children in HTML mode.
+
+Version 1.1: October 18th, 2016
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- Added support for unindented blocks in HTML mode (for textarea)
+- Fixed escaping of XML attributes
 
 

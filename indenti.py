@@ -376,7 +376,7 @@ class XmlElement(XmlElementBase):
         XmlElementBase.__init__(self, ELEMENT_NODE)
         self._name = name
         self._doctype = None
-        self._html = html
+        self._is_html = html
 
         self._children = []
 
@@ -390,7 +390,7 @@ class XmlElement(XmlElementBase):
         return self
 
     def append(self, child):
-        if self._html and self._name in HTML_VOID_TAGS:
+        if self._is_html and self._name in HTML_VOID_TAGS:
             raise ValueError('HTML void tags (%s) cannot have child elements.' % (
                 ', '.join(HTML_VOID_TAGS)))
         self._children.append(child)
@@ -411,7 +411,7 @@ class XmlElement(XmlElementBase):
                 self.apply(*child)
             elif(isinstance(child, dict)):
                 for key, value in child.items():
-                    if key == 'class' and self._html and 'class' in self._attrs:
+                    if key == 'class' and self._is_html and 'class' in self._attrs:
                         self._attrs['class'] += ' ' + value
                     else:
                         self._attrs[key] = value
@@ -443,7 +443,7 @@ class XmlElement(XmlElementBase):
              sb("<!doctype %s>" % self._doctype)
 
         if not self._children:
-            if self._html and self._name not in HTML_VOID_TAGS:
+            if self._is_html and self._name not in HTML_VOID_TAGS:
                 if not self._attrs:
                     sb("<%s></%s>" % (xml_escape(self._name), xml_escape(self._name)))
                 else:
@@ -455,7 +455,7 @@ class XmlElement(XmlElementBase):
                 sb("<%s %s/>" % (xml_escape(self._name), self._get_attrs_str()))
 
         else:
-            if self._html and self._name in HTML_NOINDENT_TAGS:
+            if self._is_html and self._name in HTML_NOINDENT_TAGS:
                 if not self._attrs:
                     return "<%s>%s</%s>" % (
                         xml_escape(self._name),
@@ -476,7 +476,7 @@ class XmlElement(XmlElementBase):
 
                 with sb:
                     for child in self._children:
-                        if isinstance(child, XmlElement) and child._html and child._name in HTML_NOINDENT_TAGS:
+                        if isinstance(child, XmlElement) and child._is_html and child._name in HTML_NOINDENT_TAGS:
                             sb.append(str(child))
                         else:
                             sb.print_lines(str(child))
@@ -504,7 +504,14 @@ class XmlFactory:
     """
 
     def __init__(self, html = False):
-         self.__html = html
+         self._is_html = html
+
+    def __call__(self, element_name):
+        """
+            Creates a callable XmlFunctor for the given element name.
+        """
+        
+        return XmlFunctor(element_name, html = self._is_html)
 
     def __getattr__(self, element_name):
         """
@@ -516,7 +523,7 @@ class XmlFactory:
             xf.__getattr__("1stName")("Lee")
         """
 
-        return XmlFunctor(element_name, html = self.__html)
+        return XmlFunctor(element_name, html = self._is_html)
 
 #--------------------------------------------------------------------
 class HtmlFactory(XmlFactory):
@@ -542,7 +549,7 @@ class XmlFunctor:
 
     def __init__(self, element_name, html = False):
         self._element_name = element_name
-        self._html = html
+        self._is_html = html
 
     def __call__(self, *args, **kwargs):
         """
@@ -551,7 +558,7 @@ class XmlFunctor:
             in the attribute name from XmlFactory.
         """
 
-        node = XmlElement(self._element_name, html = self._html)
+        node = XmlElement(self._element_name, html = self._is_html)
         node.apply(*args, **kwargs)
 
         return node
